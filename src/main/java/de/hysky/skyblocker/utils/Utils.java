@@ -104,6 +104,10 @@ public class Utils {
         return isOnSkyblock;
     }
 
+	public static boolean isOnPrivateIsland() {
+		return location == Location.PRIVATE_ISLAND;
+	}
+
     public static boolean isInDungeons() {
         return location == Location.DUNGEON;
     }
@@ -113,7 +117,7 @@ public class Utils {
     }
 
     public static boolean isInDwarvenMines() {
-        return location == Location.DWARVEN_MINES || location == Location.GLACITE_MINESHAFT;
+        return location == Location.DWARVEN_MINES || location == Location.MINESHAFT;
     }
 
     public static boolean isInTheRift() {
