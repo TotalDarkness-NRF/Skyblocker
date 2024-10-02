@@ -5,10 +5,14 @@ import de.hysky.skyblocker.config.SkyblockerConfig;
 import de.hysky.skyblocker.config.configs.MiningConfig;
 import de.hysky.skyblocker.skyblock.dwarven.CrystalsHudConfigScreen;
 import de.hysky.skyblocker.skyblock.dwarven.DwarvenHudConfigScreen;
+import de.hysky.skyblocker.skyblock.mining.MiningAbilityConfigScreen;
+import de.hysky.skyblocker.skyblock.mining.coinTracker.CoinTrackerConfigScreen;
+import de.hysky.skyblocker.skyblock.mining.eventTracker.MiningEventsConfigScreen;
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.ColorControllerBuilder;
 import dev.isxander.yacl3.api.controller.FloatFieldControllerBuilder;
 import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
+import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 
@@ -29,6 +33,14 @@ public class MiningCategory {
                         .controller(ConfigUtils::createBooleanController)
                         .build())
 
+				.option(Option.<Boolean>createBuilder()
+						.name(Text.translatable("skyblocker.config.mining.enablePrivateIslandAbilityBlock"))
+						.binding(defaults.mining.enablePrivateIslandAbilityBlock,
+								() -> config.mining.enablePrivateIslandAbilityBlock,
+								newValue -> config.mining.enablePrivateIslandAbilityBlock = newValue)
+						.controller(ConfigUtils::createBooleanController)
+						.build())
+
                 .option(Option.<Boolean>createBuilder()
                         .name(Text.translatable("skyblocker.config.mining.commissionHighlight"))
                         .binding(defaults.mining.commissionHighlight,
@@ -37,7 +49,224 @@ public class MiningCategory {
                         .controller(ConfigUtils::createBooleanController)
                         .build())
 
-                //Dwarven Mines
+				// Coin Tracker Hud
+				.group(OptionGroup.createBuilder()
+						.name(Text.translatable("skyblocker.config.mining.coinTrackerHud"))
+						.collapsed(false)
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.coinTrackerHud.enableCoinTrackerHud"))
+								.binding(defaults.mining.coinTrackerHud.enableCoinTrackerHud,
+										() -> config.mining.coinTrackerHud.enableCoinTrackerHud,
+										newValue -> config.mining.coinTrackerHud.enableCoinTrackerHud = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<MiningConfig.CoinTrackerItemStyle>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.coinTrackerHud.itemNameStyle"))
+								.description(OptionDescription.of(Text.translatable("skyblocker.config.mining.coinTrackerHud.itemNameStyle.@Tooltip[0]"),
+										Text.translatable("skyblocker.config.mining.coinTrackerHud.itemNameStyle.@Tooltip[1]"),
+										Text.translatable("skyblocker.config.mining.coinTrackerHud.itemNameStyle.@Tooltip[2]")))
+								.binding(defaults.mining.coinTrackerHud.itemNameStyle,
+										() -> config.mining.coinTrackerHud.itemNameStyle,
+										newValue -> config.mining.coinTrackerHud.itemNameStyle = newValue)
+								.controller(ConfigUtils::createEnumCyclingListController)
+								.build())
+						.option(Option.<MiningConfig.CoinTrackerStatsStyle>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.coinTrackerHud.statsStyle"))
+								.description(OptionDescription.of(Text.translatable("skyblocker.config.mining.coinTrackerHud.statsStyle.@Tooltip[0]"),
+										Text.translatable("skyblocker.config.mining.coinTrackerHud.statsStyle.@Tooltip[1]"),
+										Text.translatable("skyblocker.config.mining.coinTrackerHud.statsStyle.@Tooltip[2]")))
+								.binding(defaults.mining.coinTrackerHud.statsStyle,
+										() -> config.mining.coinTrackerHud.statsStyle,
+										newValue -> config.mining.coinTrackerHud.statsStyle = newValue)
+								.controller(ConfigUtils::createEnumCyclingListController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.coinTrackerHud.showUptime"))
+								.binding(defaults.mining.coinTrackerHud.showUptime,
+										() -> config.mining.coinTrackerHud.showUptime,
+										newValue -> config.mining.coinTrackerHud.showUptime = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.coinTrackerHud.showTotalPrice"))
+								.binding(defaults.mining.coinTrackerHud.showTotalPrice,
+										() -> config.mining.coinTrackerHud.showTotalPrice,
+										newValue -> config.mining.coinTrackerHud.showTotalPrice = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.coinTrackerHud.showPriceOfOne"))
+								.binding(defaults.mining.coinTrackerHud.showPriceOfOne,
+										() -> config.mining.coinTrackerHud.showPriceOfOne,
+										newValue -> config.mining.coinTrackerHud.showPriceOfOne = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.coinTrackerHud.showPriceType"))
+								.binding(defaults.mining.coinTrackerHud.showPriceType,
+										() -> config.mining.coinTrackerHud.showPriceType,
+										newValue -> config.mining.coinTrackerHud.showPriceType = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Integer>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.coinTrackerHud.timeToReset"))
+								.description(OptionDescription.of(Text.translatable("skyblocker.config.mining.coinTrackerHud.timeToReset@Tooltip")))
+								.binding(defaults.mining.coinTrackerHud.timeToReset,
+										() -> config.mining.coinTrackerHud.timeToReset,
+										newValue -> config.mining.coinTrackerHud.timeToReset = newValue)
+								.controller(opt -> IntegerSliderControllerBuilder.create(opt).range(-1, 60).step(1))
+								.build())
+						.option(Option.<MiningConfig.PriceType>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.coinTrackerHud.priceType"))
+								.description(OptionDescription.of(Text.translatable("skyblocker.config.mining.coinTrackerHud.priceType.@Tooltip[0]"),
+										Text.translatable("skyblocker.config.mining.coinTrackerHud.priceType.@Tooltip[1]"),
+										Text.translatable("skyblocker.config.mining.coinTrackerHud.priceType.@Tooltip[2]")))
+								.binding(defaults.mining.coinTrackerHud.priceType,
+										() -> config.mining.coinTrackerHud.priceType,
+										newValue -> config.mining.coinTrackerHud.priceType = newValue)
+								.controller(ConfigUtils::createEnumCyclingListController)
+								.build())
+						.option(Option.<String>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.coinTrackerHud.focusRegex"))
+								.binding(defaults.mining.coinTrackerHud.focusRegex,
+										() -> config.mining.coinTrackerHud.focusRegex,
+										newValue -> config.mining.coinTrackerHud.focusRegex = newValue)
+								.controller(StringControllerBuilder::create)
+								.build())
+						.option(ButtonOption.createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.coinTrackerHud.screen"))
+								.text(Text.translatable("text.skyblocker.open"))
+								.action((screen, opt) -> MinecraftClient.getInstance().setScreen(new CoinTrackerConfigScreen(screen)))
+								.build())
+						.build())
+
+				// Mining Ability Hud
+				.group(OptionGroup.createBuilder()
+						.name(Text.translatable("skyblocker.config.mining.miningAbilityHud"))
+						.collapsed(false)
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.miningAbilityHud.enableAbilityHud"))
+								.binding(defaults.mining.miningAbilityHud.enableAbilityHud,
+										() -> config.mining.miningAbilityHud.enableAbilityHud,
+										newValue -> config.mining.miningAbilityHud.enableAbilityHud = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.miningAbilityHud.alwaysDisplay"))
+								.binding(defaults.mining.miningAbilityHud.alwaysDisplay,
+										() -> config.mining.miningAbilityHud.alwaysDisplay,
+										newValue -> config.mining.miningAbilityHud.alwaysDisplay = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.miningAbilityHud.showIcon"))
+								.binding(defaults.mining.miningAbilityHud.showIcon,
+										() -> config.mining.miningAbilityHud.showIcon,
+										newValue -> config.mining.miningAbilityHud.showIcon = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(ButtonOption.createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.miningAbilityHud.screen"))
+								.text(Text.translatable("text.skyblocker.open"))
+								.action((screen, opt) -> MinecraftClient.getInstance().setScreen(new MiningAbilityConfigScreen(screen)))
+								.build())
+						.build())
+
+				// Mining Events Widget
+				.group(OptionGroup.createBuilder()
+						.name(Text.translatable("skyblocker.config.mining.miningEventsWidget"))
+						.collapsed(false)
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.miningEventsWidget.enableEventsWidget"))
+								.binding(defaults.mining.miningEventsWidget.enableEventsWidget,
+										() -> config.mining.miningEventsWidget.enableEventsWidget,
+										newValue -> config.mining.miningEventsWidget.enableEventsWidget = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.miningEventsWidget.alwaysDisplay"))
+								.binding(defaults.mining.miningEventsWidget.alwaysDisplay,
+										() -> config.mining.miningEventsWidget.alwaysDisplay,
+										newValue -> config.mining.miningEventsWidget.alwaysDisplay = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.miningEventsWidget.compact"))
+								.binding(defaults.mining.miningEventsWidget.compact,
+										() -> config.mining.miningEventsWidget.compact,
+										newValue -> config.mining.miningEventsWidget.compact = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.miningEventsWidget.showIcon"))
+								.binding(defaults.mining.miningEventsWidget.showIcon,
+										() -> config.mining.miningEventsWidget.showIcon,
+										newValue -> config.mining.miningEventsWidget.showIcon = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.miningEventsWidget.shortLocationName"))
+								.binding(defaults.mining.miningEventsWidget.shortLocationName,
+										() -> config.mining.miningEventsWidget.shortLocationName,
+										newValue -> config.mining.miningEventsWidget.shortLocationName = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.miningEventsWidget.shortEventName"))
+								.binding(defaults.mining.miningEventsWidget.shortEventName,
+										() -> config.mining.miningEventsWidget.shortEventName,
+										newValue -> config.mining.miningEventsWidget.shortEventName = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(ButtonOption.createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.miningEventsWidget.screen"))
+								.text(Text.translatable("text.skyblocker.open"))
+								.action((screen, opt) -> MinecraftClient.getInstance().setScreen(new MiningEventsConfigScreen(screen)))
+								.build())
+						.build())
+
+				//HOTM solver
+				.group(OptionGroup.createBuilder()
+						.name(Text.translatable("skyblocker.config.mining.hotmSolver"))
+						.collapsed(false)
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.hotmSolver.enableHOTMSolver"))
+								.binding(defaults.mining.hotmSolver.enableHOTMSolver,
+										() -> config.mining.hotmSolver.enableHOTMSolver,
+										newValue -> config.mining.hotmSolver.enableHOTMSolver = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.hotmSolver.highlightAbilities"))
+								.binding(defaults.mining.hotmSolver.highlightAbilities,
+										() -> config.mining.hotmSolver.highlightAbilities,
+										newValue -> config.mining.hotmSolver.highlightAbilities = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.hotmSolver.highlightEnabledPerks"))
+								.binding(defaults.mining.hotmSolver.highlightEnabledPerks,
+										() -> config.mining.hotmSolver.highlightEnabledPerks,
+										newValue -> config.mining.hotmSolver.highlightEnabledPerks = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.hotmSolver.highlightMaxedPerks"))
+								.binding(defaults.mining.hotmSolver.highlightMaxedPerks,
+										() -> config.mining.hotmSolver.highlightMaxedPerks,
+										newValue -> config.mining.hotmSolver.highlightMaxedPerks = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Text.translatable("skyblocker.config.mining.hotmSolver.highlightDisabledPerks"))
+								.binding(defaults.mining.hotmSolver.highlightDisabledPerks,
+										() -> config.mining.hotmSolver.highlightDisabledPerks,
+										newValue -> config.mining.hotmSolver.highlightDisabledPerks = newValue)
+								.controller(ConfigUtils::createBooleanController)
+								.build())
+						.build())
+
+				//Dwarven Mines
                 .group(OptionGroup.createBuilder()
                         .name(Text.translatable("skyblocker.config.mining.dwarvenMines"))
                         .option(Option.<Boolean>createBuilder()

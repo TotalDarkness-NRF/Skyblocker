@@ -9,7 +9,23 @@ public class MiningConfig {
     @SerialEntry
     public boolean enableDrillFuel = true;
 
-    @SerialEntry
+	@SerialEntry
+	public boolean enablePrivateIslandAbilityBlock = true;
+
+	@SerialEntry
+	public CoinTrackerHud coinTrackerHud = new CoinTrackerHud();
+
+	@SerialEntry
+	public MiningAbilityHud miningAbilityHud = new MiningAbilityHud();
+
+	@SerialEntry
+	public MiningEventsWidget miningEventsWidget = new MiningEventsWidget();
+
+	@SerialEntry
+	public HOTMSolver hotmSolver = new HOTMSolver();
+
+
+	@SerialEntry
     public DwarvenMines dwarvenMines = new DwarvenMines();
 
     @SerialEntry
@@ -41,7 +57,105 @@ public class MiningConfig {
         public boolean solvePuzzler = true;
     }
 
-    public static class DwarvenHud {
+	public static class CoinTrackerHud {
+		@SerialEntry
+		public boolean enableCoinTrackerHud = true;
+
+		@SerialEntry
+		public CoinTrackerItemStyle itemNameStyle = CoinTrackerItemStyle.ICON_NAME;
+
+		@SerialEntry
+		public CoinTrackerStatsStyle statsStyle = CoinTrackerStatsStyle.MONEY_HOUR;
+
+		@SerialEntry
+		public boolean showUptime = true;
+
+		@SerialEntry
+		public boolean showPriceOfOne = true;
+
+		@SerialEntry
+		public boolean showTotalPrice = true;
+
+		@SerialEntry
+		public boolean showPriceType = true;
+
+		@SerialEntry
+		public int timeToReset = 5;
+
+		@SerialEntry
+		public PriceType priceType = PriceType.BAZAAR_INSTANT_SELL;
+
+		@SerialEntry
+		public String focusRegex = "";
+
+		@SerialEntry
+		public int hudX = 10;
+
+		@SerialEntry
+		public int hudY = 10;
+	}
+
+	public static class MiningAbilityHud {
+		@SerialEntry
+		public boolean enableAbilityHud = true;
+
+		@SerialEntry
+		public boolean alwaysDisplay = true;
+
+		@SerialEntry
+		public boolean showIcon = true;
+
+		@SerialEntry
+		public int abilityX = 10;
+
+		@SerialEntry
+		public int abilityY = 10;
+	}
+
+	public static class MiningEventsWidget {
+		@SerialEntry
+		public boolean enableEventsWidget = true;
+
+		@SerialEntry
+		public boolean alwaysDisplay = true;
+
+		@SerialEntry
+		public boolean compact = true;
+
+		@SerialEntry
+		public boolean showIcon = true;
+
+		@SerialEntry
+		public boolean shortLocationName = true;
+
+		@SerialEntry
+		public boolean shortEventName = true;
+
+		@SerialEntry
+		public int widgetX = 10;
+
+		@SerialEntry
+		public int widgetY = 10;
+	}
+
+	public static class HOTMSolver {
+		@SerialEntry
+		public boolean enableHOTMSolver = true;
+
+		@SerialEntry
+		public boolean highlightAbilities = true;
+
+		@SerialEntry
+		public boolean highlightEnabledPerks = true;
+
+		@SerialEntry
+		public boolean highlightMaxedPerks = true;
+
+		@SerialEntry
+		public boolean highlightDisabledPerks = true;
+	}
+
+	public static class DwarvenHud {
         @SerialEntry
         public boolean enabledCommissions = true;
 
@@ -155,4 +269,44 @@ public class MiningConfig {
             };
         }
     }
+
+	public enum PriceType {
+		BAZAAR_INSTANT_SELL, BAZAAR_SELL_OFFER, NPC;
+
+		@Override
+		public String toString() {
+			return switch (this) {
+				case BAZAAR_INSTANT_SELL -> "Instant Sell";
+				case BAZAAR_SELL_OFFER -> "Sell Offer";
+				case NPC -> "NPC";
+			};
+		}
+	}
+
+	public enum CoinTrackerItemStyle {
+		ICON_NAME, NAME, ICON;
+
+		@Override
+		public String toString() {
+			return switch (this) {
+				case ICON_NAME -> "Icon and Name";
+				case NAME -> "Name";
+				case ICON -> "Icon";
+			};
+		}
+	}
+
+	public enum CoinTrackerStatsStyle {
+		MONEY_HOUR, MONEY_MINUTE, MONEY_SECOND, NONE;
+
+		@Override
+		public String toString() {
+			return switch (this) {
+				case MONEY_HOUR -> "Money Per Hour";
+				case MONEY_MINUTE -> "Money Per Minute";
+				case MONEY_SECOND -> "Money Per Second";
+				case NONE -> "None";
+			};
+		}
+	}
 }
